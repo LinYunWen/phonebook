@@ -53,12 +53,26 @@ int main(int argc, char *argv[])
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
     clock_gettime(CLOCK_REALTIME, &start);
+#if defined(OPT)
+    char temp = '\0';
+    entry **search_table;
+    search_table = (entry **) malloc(sizeof(entry *)*26);
+    for (int j = 0; j < 26; j++) {
+        search_table[j] = NULL;
+    }
+#endif
     while (fgets(line, sizeof(line), fp)) {
         while (line[i] != '\0')
             i++;
         line[i - 1] = '\0';
         i = 0;
         e = append(line, e);
+#if defined(OPT)
+        if (temp != line[0]) {
+            temp = line[0];
+            search_table[temp-'a'] = e;
+        }
+#endif
     }
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
@@ -72,16 +86,28 @@ int main(int argc, char *argv[])
     char input[MAX_LAST_NAME_SIZE] = "zyxel";
     e = pHead;
 
+#if defined(OPT)
+    assert(findName(input, search_table[input[0]-'a'], search_table[input[0]-'a'+1]) &&
+           "Did you implement findName() in " IMPL "?");
+    assert(0 == strcmp(findName(input, search_table[input[0]-'a'], search_table[input[0]-'a'+1])->lastName, "zyxel"));
+#else
     assert(findName(input, e) &&
            "Did you implement findName() in " IMPL "?");
     assert(0 == strcmp(findName(input, e)->lastName, "zyxel"));
+#endif
 
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
     /* compute the execution time */
     clock_gettime(CLOCK_REALTIME, &start);
+
+#if defined(OPT)
+    findName(input, search_table[input[0]-'a'], search_table[input[0]-'a'+1]);
+#else
     findName(input, e);
+#endif
+
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time2 = diff_in_second(start, end);
 
@@ -94,6 +120,10 @@ int main(int argc, char *argv[])
 
     if (pHead->pNext) free(pHead->pNext);
     free(pHead);
+
+#if defined(OPT)
+    free(search_table);
+#endif
 
     return 0;
 }
