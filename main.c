@@ -49,6 +49,21 @@ int main(int argc, char *argv[])
     e = pHead;
     e->pNext = NULL;
 
+#ifdef OPT
+    /* build hash table */
+    hash_entry **hash_table_head, **hash_table;
+    hash_table_head = (hash_entry **) malloc(sizeof(hash_entry *));
+    hash_table = hash_table_head;
+    for (int j = 0; j < 4500; j++) {
+        hash_table[j] = (hash_entry *) malloc(sizeof(hash_entry));
+        hash_table_head[j] = (hash_entry *) malloc(sizeof(hash_entry));
+        hash_table[j] = hash_table_head[j];
+        hash_table[j]->value = NULL;
+        hash_table[j]->tail = NULL;
+        hash_table[j]->next = NULL;
+    }
+#endif
+
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
@@ -58,7 +73,13 @@ int main(int argc, char *argv[])
             i++;
         line[i - 1] = '\0';
         i = 0;
+#ifdef OPT
+        entry *temp = (entry *) malloc(sizeof(entry));
+        int hash_value = BKDRHash(line);
+        hash_table[hash_value] = hash_linear_append(line, temp, hash_table[hash_value]);
+#else
         e = append(line, e);
+#endif
     }
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
@@ -72,16 +93,26 @@ int main(int argc, char *argv[])
     char input[MAX_LAST_NAME_SIZE] = "zyxel";
     e = pHead;
 
+#ifdef OPT
+    // assert(findName(input, hash_table_head) &&
+    //        "Did you implement findName() in " IMPL "?");
+    // assert(0 == strcmp(findName(input, hash_table_head)->lastName, "zyxel"));
+#else
     assert(findName(input, e) &&
            "Did you implement findName() in " IMPL "?");
     assert(0 == strcmp(findName(input, e)->lastName, "zyxel"));
+#endif
 
 #if defined(__GNUC__)
     __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
     /* compute the execution time */
     clock_gettime(CLOCK_REALTIME, &start);
+#ifdef OPT
+    findName(input, hash_table_head);
+#else
     findName(input, e);
+#endif
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time2 = diff_in_second(start, end);
 
@@ -94,6 +125,11 @@ int main(int argc, char *argv[])
 
     if (pHead->pNext) free(pHead->pNext);
     free(pHead);
+
+#ifdef OPT
+    // free(hash_table);
+    // free(hash_table_head);
+#endif
 
     return 0;
 }

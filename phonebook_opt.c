@@ -1,16 +1,30 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "phonebook_opt.h"
 
 /* TODO: FILL YOUR OWN IMPLEMENTATION HERE! */
-entry *findName(char lastName[], entry *pHead)
+entry *findName(char lastName[], hash_entry **table)
 {
-    /* TODO: implement */
+    int value = BKDRHash(lastName);
+    hash_entry *temp = table[value];
+    do {
+        if (strcmp(temp->lastName, lastName) == 0) {
+            return temp->value;
+        }
+        temp = temp->next;
+    } while (temp != NULL);
     return NULL;
 }
 
 entry *append(char lastName[], entry *e)
 {
-    /* TODO: implement */
-    return NULL;
+    /* allocate memory for the new entry and put lastName */
+    e->pNext = (entry *) malloc(sizeof(entry));
+    e = e->pNext;
+    strcpy(e->lastName, lastName);
+    e->pNext = NULL;
+
+    return e;
 }

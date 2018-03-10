@@ -1,5 +1,3 @@
-#include "phonebook_opt.h"
-
 #ifndef _HASH_H
 #define _HASH_H
 
@@ -11,5 +9,6 @@ typedef struct __HASH_ENTRY {
     struct __HASH_ENTRY *next;
 } hash_entry;
 
-unsigned int BKDRHash(char *str);
+int BKDRHash(char *str);
+hash_entry* hash_linear_append(char lastName[], entry *value, hash_entry *block);
 #endif
