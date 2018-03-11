@@ -17,6 +17,7 @@ int BKDRHash(char *str)
 
 hash_entry* hash_linear_append(char lastName[], entry *value, hash_entry *block)
 {
+    strcpy(value->lastName, lastName);
     block->next = (hash_entry*) malloc(sizeof(hash_entry));
     block = block->next;
     strcpy(block->lastName, lastName);
