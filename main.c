@@ -49,11 +49,8 @@ int main(int argc, char *argv[])
     e = pHead;
     e->pNext = NULL;
 
-#if defined(__GNUC__)
-    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
-#endif
-    clock_gettime(CLOCK_REALTIME, &start);
 #if defined(OPT)
+    /* build search table */
     char temp = '\0';
     entry **search_table;
     search_table = (entry **) malloc(sizeof(entry *)*26);
@@ -61,12 +58,18 @@ int main(int argc, char *argv[])
         search_table[j] = NULL;
     }
 #endif
+
+#if defined(__GNUC__)
+    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
+#endif
+    clock_gettime(CLOCK_REALTIME, &start);
     while (fgets(line, sizeof(line), fp)) {
         while (line[i] != '\0')
             i++;
         line[i - 1] = '\0';
         i = 0;
         e = append(line, e);
+
 #if defined(OPT)
         if (temp != line[0]) {
             temp = line[0];
