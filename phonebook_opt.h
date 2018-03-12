@@ -5,7 +5,7 @@
 
 /* TODO: After modifying the original version, uncomment the following
  * line to set OPT properly */
-// #define OPT 1
+#define OPT 1
 typedef struct __INFOMATION {
     char email[16];
     char phone[10];
